@@ -1,5 +1,6 @@
 import axios from 'axios'
 import React, {  useState, useEffect } from 'react'
+import ReactPlayer from 'react-player';
 
 const SingleFile = (id) => {
 	const [file, setFile] = useState({});
@@ -17,10 +18,12 @@ const SingleFile = (id) => {
 			<div className='card'>
 			  <div className='card-header'>{file.name}</div>
 			  <div className='card-body'>
+			  {file.type === 'image' &&
 				<img src={file.url}/>
-
+			  }
+			  {file.type === 'video' &&
+			  <ReactPlayer url={file.url} controls={true}/>}
 				<hr />
-
 			  </div>
 			</div>
 		  </div>

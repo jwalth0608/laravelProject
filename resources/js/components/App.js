@@ -6,6 +6,7 @@
     import Header from './Header'
     import FilesList from './FilesList'
 	import NewFile from './NewFile';
+	import Login from './Login';
 	import SingleFile from './SingleFile';
 
     class App extends Component {
@@ -15,7 +16,8 @@
             <div>
               <Header />
               <Switch>
-                <Route exact path='/' component={FilesList} />
+				<Route exact path='/' component={Login} />
+                <Route path='/list' component={FilesList} />				
 				<Route path='/create' component={NewFile} />
 				<Route path='/:id' component={SingleFile} />
               </Switch>

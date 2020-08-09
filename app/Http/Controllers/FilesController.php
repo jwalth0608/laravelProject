@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 use App\Files;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class FilesController extends Controller
 {
     public function index() 
 	{
+		$user = Auth::user();
+		var_dump($user);
+		if (!Auth::check()) {
+				return response()->json([
+				'message' => 'user not logged in'
+			  ]);
+			}
 		$files = Files::orderBy('created_at', 'desc')
 						->get();
 		
@@ -47,11 +56,15 @@ class FilesController extends Controller
 	  
 	public function upload(Request $request)
 		{
-			
+			if (!Auth::check()) {
+				return response()->json([
+				'message' => 'user not logged in'
+			  ]);
+			}
 		  
 		  if ($request->file('uploadFile')) {
 			$uploadedFile = $request->file('uploadFile');
-		  
+			$extension = $request->file('uploadFile')->extension();
 		  $filename = time().$uploadedFile->getClientOriginalName();
 		  Storage::disk('public')->putFileAs(
 			'files/',
@@ -63,7 +76,7 @@ class FilesController extends Controller
 		  $upload->name = $filename;
 		  $upload->url = 'files/'.$filename;
 		$upload->owner_id = '1';
-		$upload->type = 'image';
+		$upload->type = $extension == 'mp4' ? 'video' : 'image';
 
 		  $upload->save();
 
