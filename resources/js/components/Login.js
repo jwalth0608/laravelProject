@@ -13,6 +13,7 @@ const Login = () => {
 		'email': name,
 		'password': password
 	}).then(response => {
+		localStorage.setItem('user', JSON.stringify(response.data));
 				history.push('/list');
 			});
 	}
@@ -24,18 +25,30 @@ const Login = () => {
 	const setPasswordValue = event => {
 		setPassword(event.target.value);
 	}
+	
+	const goToCreate = () => {
+		history.push('/newUser')
+	}
 	return (
 	  <div className='container py-4'>
 		<div className='row justify-content-center'>
 		  <div className='col-md-8'>
 			<div className='card'>
 			  <div className='card-header'>Login</div>
-			  <div className='card-body'>
-				Email:
-				<input type="text" value={name} onChange={setNameValue} />
-				Password:
-				<input type="text" value={password} onChange={setPasswordValue} />
-				<button className='btn btn-primary btn-sm mb-3' onClick={submitLogin}> Login!</button>
+			  <div className='d-block card-body'>
+				<div>
+				<label for="user-name">Email</label>
+				<input class="form-control" value={name} id="user-name" onChange={setNameValue} />
+				</div>
+				<div>
+				<label for="password">Password</label>
+<input class="form-control" id="password" type="password" value={password} onChange={setPasswordValue} />
+				</div>
+				<div>
+					<button className='btn btn-primary btn-sm mb-3' onClick={submitLogin}> Login!</button>
+					<br/>
+					<button className='btn btn-primary btn-sm mb-3' onClick={goToCreate}> Create New User!</button>
+				</div>
 			  </div>
 			</div>
 		  </div>

@@ -6,9 +6,16 @@
     const FilesList = ({}) => {
 		const [files, setFiles] = useState([]);
 		const [selectedFile, setSelectedFile] = useState(null);
+		const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+		
+		const logout = () => {
+			localStorage.removeItem('user');
+		}
 
 		useEffect( () => {
-			axios.get('/api/files').then(response => {
+			axios.get('/api/files', {headers: {
+				'user': localStorage.getItem('user')
+			}}).then(response => {
 				setFiles(response.data);
 			})
 		}, []);
@@ -28,7 +35,8 @@
 			
 			axios.post('api/file', formData,{
 				headers: {
-				  'Content-Type': 'multipart/form-data'
+				  'Content-Type': 'multipart/form-data',
+				  'user': localStorage.getItem('user')
 				}
 			}).then(response => {
 				setFiles([...files, response.data])
@@ -38,6 +46,9 @@
 
         return (
           <div className='container py-4'>
+		  {user?.id > 0 &&
+			<Link className='navbar-brand text-primary' onClick={logout} to='/'>{user?.name} Log out</Link>
+		  }
             <div className='row justify-content-center'>
               <div className='col-md-8'>
                 <div className='card'>

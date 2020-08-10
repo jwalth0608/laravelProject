@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Files;
+use App\Files_User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,16 +11,13 @@ use Illuminate\Support\Facades\Auth;
 
 class FilesController extends Controller
 {
-    public function index() 
+    public function index(Request $request) 
 	{
-		$user = Auth::user();
-		var_dump($user);
-		if (!Auth::check()) {
-				return response()->json([
-				'message' => 'user not logged in'
-			  ]);
-			}
-		$files = Files::orderBy('created_at', 'desc')
+		$user = json_decode($request->header('user'));
+		$files = Files::join('files__users', 'files__users.file_id', '=', 'files.id')
+		->select('files.*')
+		->where('files__users.user_id', $user->id)
+		->orderBy('files.created_at', 'desc')
 						->get();
 		
 		return $files->toJson();
@@ -46,23 +44,23 @@ class FilesController extends Controller
         return $file->toJson();
       }
 
-      public function share(File $file)
+      public function share($user_id, $file_id)
       {
-        $file->is_completed = true;
-        $project->update();
+		$FileUser = new Files_User;
+		$FileUser->user_id = $user_id;
+		$FileUser->file_id = $file_id;
+		$FileUser->save();
 
-        return response()->json('Project updated!');
+        return response()->json('File Shared!');
       }
 	  
 	public function upload(Request $request)
 		{
-			if (!Auth::check()) {
-				return response()->json([
-				'message' => 'user not logged in'
-			  ]);
-			}
+			
 		  
 		  if ($request->file('uploadFile')) {
+			  $user = json_decode($request->header('user'));
+			 
 			$uploadedFile = $request->file('uploadFile');
 			$extension = $request->file('uploadFile')->extension();
 		  $filename = time().$uploadedFile->getClientOriginalName();
@@ -75,10 +73,16 @@ class FilesController extends Controller
 		  $upload = new Files;
 		  $upload->name = $filename;
 		  $upload->url = 'files/'.$filename;
-		$upload->owner_id = '1';
+		$upload->owner_id = $user->id;
 		$upload->type = $extension == 'mp4' ? 'video' : 'image';
 
 		  $upload->save();
+		  
+		  
+		  $FileUser = new Files_User;
+		$FileUser->user_id = $user->id;
+		$FileUser->file_id = $upload->id;
+		$FileUser->save();
 
 		  return response()->json([
 			'id' => $upload->id,

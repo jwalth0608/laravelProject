@@ -8,6 +8,7 @@
 	import NewFile from './NewFile';
 	import Login from './Login';
 	import SingleFile from './SingleFile';
+	import CreateUser from './CreateUser';
 
     class App extends Component {
       render () {
@@ -17,6 +18,7 @@
               <Header />
               <Switch>
 				<Route exact path='/' component={Login} />
+				<Route path='/newUser' component={CreateUser} />
                 <Route path='/list' component={FilesList} />				
 				<Route path='/create' component={NewFile} />
 				<Route path='/:id' component={SingleFile} />
