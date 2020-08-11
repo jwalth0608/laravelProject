@@ -7,6 +7,8 @@ composer install
 npm install
 npm run dev
 php artisan migrate
+You can copy the .env.example file into a new file and call label it .env
+then run php artisan key:generate
 php artisan serve
 
 you will have to create a new user first
